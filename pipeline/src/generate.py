@@ -87,12 +87,19 @@ def _call_gemini(prompt: str) -> str:
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.6,
-            "maxOutputTokens": 2048,
+            # Generous cap: Gemini 2.5 models spend some tokens on internal
+            # reasoning before the visible output, so leave plenty of headroom.
+            "maxOutputTokens": 8192,
             "responseMimeType": "application/json",
         },
     }
+    # New-format Google AI Studio keys (prefix "AQ.") authenticate via the
+    # x-goog-api-key header, NOT the ?key= query parameter.
     resp = requests.post(
-        url, params={"key": GEMINI_API_KEY}, json=payload, timeout=90
+        url,
+        headers={"x-goog-api-key": GEMINI_API_KEY},
+        json=payload,
+        timeout=120,
     )
     resp.raise_for_status()
     data = resp.json()
