@@ -9,6 +9,7 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+pipeline/published_count.txt
 
 # Node / Next.js
 node_modules/

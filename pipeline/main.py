@@ -77,5 +77,12 @@ def run(breaking: bool = False) -> int:
 if __name__ == "__main__":
     is_breaking = "--breaking" in sys.argv
     count = run(breaking=is_breaking)
+    # Let CI know how many were published so it only rebuilds the site when
+    # there's actually something new.
+    try:
+        with open("published_count.txt", "w", encoding="utf-8") as fh:
+            fh.write(str(count))
+    except OSError:
+        pass
     # Non-zero exit only on hard config errors (handled above); 0 otherwise.
     sys.exit(0)

@@ -16,6 +16,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write   # allow pushing the rebuild marker
     defaults:
       run:
         working-directory: pipeline
@@ -44,3 +46,22 @@ jobs:
           MIN_SOURCES: "2"
           LOOKBACK_HOURS: "24"
         run: python main.py
+
+      # Cloudflare rebuilds the static site on any push (build watch paths = *).
+      # Bump a marker file so new articles go live after each publish.
+      - name: Trigger Cloudflare rebuild
+        if: success()
+        working-directory: ${{ github.workspace }}
+        run: |
+          COUNT=$(cat pipeline/published_count.txt 2>/dev/null || echo 0)
+          if [ "$COUNT" -gt 0 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            date -u +"%Y-%m-%dT%H:%M:%SZ" > .last-publish
+            git add .last-publish
+            git commit -m "chore(site): rebuild after daily publish [auto]"
+            git push
+            echo "Triggered rebuild ($COUNT new article(s))."
+          else
+            echo "No new articles; skipping site rebuild."
+          fi
