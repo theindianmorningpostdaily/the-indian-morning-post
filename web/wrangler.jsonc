@@ -1,0 +1,13 @@
+{
+  // Cloudflare Workers static-assets config for The Indian Morning Post.
+  // The Next.js static export lands in ./out (run from the `web` root dir);
+  // `npx wrangler deploy` uploads that directory as a static site — no Worker
+  // script needed.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "the-indian-morning-post",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
