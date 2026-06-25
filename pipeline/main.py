@@ -52,21 +52,34 @@ def run(breaking: bool = False) -> int:
         return 0
 
     # 4. Rank & select top stories
-    top = rank_clusters(clusters, top_n=limit)
+    # Rank extra candidates so we can skip near-duplicates and still hit `limit`.
+    top = rank_clusters(clusters, top_n=limit * 2 + 2)
 
     # 5/6. Generate -> image -> publish
     published = 0
+    seen_keywords: list[set[str]] = []
     for idx, cluster in enumerate(top):
+        if published >= limit:
+            break
         print(f"\n--- Story {idx + 1}/{len(top)} ---")
         article = generate_article(cluster)
         if not article:
             continue
+
+        # Safety net: skip if this story heavily overlaps one already published
+        # in THIS run (same event the clustering didn't merge).
+        kw = {k.lower() for k in article.keywords}
+        if any(len(kw & prev) >= 3 for prev in seen_keywords):
+            print(f"  [dedupe] skipped near-duplicate: {article.headline[:60]}")
+            continue
+
         article.is_breaking = breaking
         # seed image deterministically from cluster key for reproducibility
         seed = int(cluster.key[:6], 16) % 1_000_000
         article.image_url = attach_image(article.image_prompt, seed=seed)
         if publish(article, cluster):
             published += 1
+            seen_keywords.append(kw)
 
     print(f"\n=== Done. Published {published} article(s). ===")
     if published:

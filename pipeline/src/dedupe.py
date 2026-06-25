@@ -8,9 +8,26 @@ from rapidfuzz import fuzz
 from src.models import RawItem, StoryCluster
 from src.utils import normalize_title
 
-# Two headlines belong to the same story if their normalized token-set
-# similarity is at or above this threshold.
+# A strong fuzzy match alone groups two headlines together.
 SIMILARITY_THRESHOLD = 72
+# A weaker fuzzy match still groups them IF they also share enough distinctive
+# words (e.g. "Venezuela" + "earthquake") — catches same-event stories that are
+# worded very differently across outlets.
+WEAK_THRESHOLD = 55
+MIN_SHARED_TOKENS = 2
+
+
+def _tokens(norm_title: str) -> set[str]:
+    # normalize_title already drops stopwords/short words; keep the meaty ones.
+    return {t for t in norm_title.split() if len(t) > 3}
+
+
+def _same_story(a_norm: str, b_norm: str) -> bool:
+    score = fuzz.token_set_ratio(a_norm, b_norm)
+    if score >= SIMILARITY_THRESHOLD:
+        return True
+    shared = _tokens(a_norm) & _tokens(b_norm)
+    return score >= WEAK_THRESHOLD and len(shared) >= MIN_SHARED_TOKENS
 
 
 def cluster_items(items: list[RawItem]) -> list[StoryCluster]:
@@ -20,9 +37,9 @@ def cluster_items(items: list[RawItem]) -> list[StoryCluster]:
         norm = normalize_title(item.title)
         placed = False
         for cluster in clusters:
-            lead_norm = normalize_title(cluster.items[0].title)
-            score = fuzz.token_set_ratio(norm, lead_norm)
-            if score >= SIMILARITY_THRESHOLD:
+            # Compare against EVERY member, not just the lead — long event
+            # threads chain together even when the first headline drifts.
+            if any(_same_story(norm, normalize_title(m.title)) for m in cluster.items):
                 cluster.items.append(item)
                 item.cluster_key = cluster.key
                 placed = True
