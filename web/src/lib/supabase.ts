@@ -22,8 +22,10 @@ export const supabase = createClient(
   { auth: { persistSession: false } }
 );
 
+// Override via NEXT_PUBLIC_SITE_URL if you later add a custom domain.
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://theindianpost.pages.dev";
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://the-indian-morning-post.theindianmorningpostdaily.workers.dev";
 
 export const SITE_NAME = "The Indian Morning Post";
 export const SITE_TAGLINE = "Trusted Global News, Every Morning";
