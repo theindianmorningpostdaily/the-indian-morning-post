@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="The Indian Morning Post">
+  <rect width="512" height="512" rx="104" fill="#111111"/>
+  <!-- sunrise glow ('Morning') -->
+  <path d="M96 372 a160 110 0 0 1 320 0 Z" fill="#b91c1c" opacity="0.18"/>
+  <!-- sun rays -->
+  <g stroke="#b91c1c" stroke-width="9" stroke-linecap="round" opacity="0.6">
+    <line x1="256" y1="118" x2="256" y2="150"/>
+    <line x1="352" y1="150" x2="334" y2="176"/>
+    <line x1="160" y1="150" x2="178" y2="176"/>
+  </g>
+  <!-- monogram -->
+  <text x="256" y="262" text-anchor="middle" dominant-baseline="central"
+        font-family="Georgia, 'Times New Roman', serif" font-weight="700"
+        font-size="172" letter-spacing="-8" fill="#ffffff">IMP</text>
+  <!-- accent rule -->
+  <rect x="156" y="384" width="200" height="13" rx="6" fill="#b91c1c"/>
+</svg>

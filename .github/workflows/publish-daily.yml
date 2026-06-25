@@ -1,0 +1,46 @@
+name: Publish Daily Edition
+
+# Runs the newsroom pipeline every morning at 04:00 IST.
+# IST = UTC+5:30, so 04:00 IST == 22:30 UTC the previous day.
+on:
+  schedule:
+    - cron: "30 22 * * *"   # 22:30 UTC = 04:00 IST
+  workflow_dispatch:          # allow manual "Run workflow" from the Actions tab
+
+# Avoid overlapping runs if a previous one is slow.
+concurrency:
+  group: publish-daily
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-2.0-flash' }}
+          CF_PAGES_DEPLOY_HOOK: ${{ secrets.CF_PAGES_DEPLOY_HOOK }}
+          MAX_ARTICLES: "5"
+          MIN_SOURCES: "2"
+          LOOKBACK_HOURS: "24"
+        run: python main.py

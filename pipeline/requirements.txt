@@ -1,0 +1,9 @@
+# The Indian Morning Post — pipeline dependencies (all free / open-source)
+feedparser==6.0.11        # RSS/Atom parsing
+requests==2.32.3          # HTTP (Gemini, Pollinations, Supabase REST)
+beautifulsoup4==4.12.3    # strip HTML from feed bodies
+python-dateutil==2.9.0    # robust date parsing
+python-slugify==8.0.4     # SEO-safe slugs
+rapidfuzz==3.9.7          # fast fuzzy matching for dedupe/clustering
+python-dotenv==1.0.1      # load .env locally
+tenacity==9.0.0           # retry/backoff for flaky free APIs
