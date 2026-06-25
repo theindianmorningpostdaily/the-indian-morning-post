@@ -58,6 +58,7 @@ jobs:
             date -u +"%Y-%m-%dT%H:%M:%SZ" > .last-publish
             git add .last-publish
             git commit -m "chore(site): rebuild after breaking publish [auto]"
+            git pull --rebase --autostash origin main || true
             git push
             echo "Triggered rebuild ($COUNT new article(s))."
           else
