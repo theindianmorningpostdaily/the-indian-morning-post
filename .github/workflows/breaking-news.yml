@@ -1,11 +1,10 @@
 name: Breaking News Check
 
-# Optional: every 2 hours, look for major verified breaking news and publish
-# only if a story clears the same 2-source verification bar. Comment out the
-# schedule block to disable and stay strictly on the daily edition.
+# Every hour, look for major verified breaking news and publish only if a
+# story clears the same 2-source verification bar (and isn't already published).
 on:
   schedule:
-    - cron: "17 */2 * * *"   # every 2 hours at :17 (off the hour, less contended)
+    - cron: "17 * * * *"     # every hour at :17 (off the hour, less contended)
   workflow_dispatch:
 
 concurrency:
