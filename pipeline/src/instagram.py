@@ -13,7 +13,10 @@ import requests
 from config import IG_USER_ID, IG_ACCESS_TOKEN, SITE_URL, DRY_RUN
 from src.models import Article
 
-GRAPH = "https://graph.facebook.com/v21.0"
+# "Instagram API with Instagram Login" flow → graph.instagram.com.
+# (The older Facebook-Login flow uses graph.facebook.com; override via env.)
+import os
+GRAPH = os.getenv("IG_API_BASE", "https://graph.instagram.com/v21.0").rstrip("/")
 
 # A few evergreen tags added to every post.
 BASE_HASHTAGS = ["news", "worldnews", "breakingnews", "currentaffairs",
