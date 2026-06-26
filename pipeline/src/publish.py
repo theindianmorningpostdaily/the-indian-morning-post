@@ -20,10 +20,12 @@ def _unique_slug(slug: str) -> str:
     return slug  # give up gracefully; DB unique constraint will guard
 
 
-def publish(article: Article, cluster: StoryCluster) -> bool:
+def publish(article: Article, cluster: StoryCluster) -> str | None:
+    """Persist the article. Returns the final published slug on success
+    (truthy), or None on failure / dry-run."""
     if DRY_RUN:
         print(f"  [publish] DRY_RUN — would publish: {article.headline}")
-        return True
+        return None
 
     slug = _unique_slug(article.slug)
     row = {
@@ -52,7 +54,7 @@ def publish(article: Article, cluster: StoryCluster) -> bool:
         article_id = created[0]["id"]
     except requests.HTTPError as exc:
         print(f"  [publish] FAILED to insert article: {exc}")
-        return False
+        return None
 
     # Internal source attribution (compliance — not shown verbatim to readers)
     sources = [{
@@ -68,7 +70,7 @@ def publish(article: Article, cluster: StoryCluster) -> bool:
         print(f"  [publish] WARN: could not store sources: {exc}")
 
     print(f"  [publish] PUBLISHED /{article.category}/{slug}")
-    return True
+    return slug
 
 
 def trigger_rebuild() -> None:

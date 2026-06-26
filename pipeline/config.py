@@ -28,6 +28,16 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 # --- Pexels (real stock photos; optional — falls back to AI images if unset) ---
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
 
+# --- Site URL (for building article links in social posts) ---
+SITE_URL = os.getenv(
+    "SITE_URL",
+    "https://the-indian-morning-post.theindianmorningpostdaily.workers.dev",
+).rstrip("/")
+
+# --- Instagram auto-post (optional; needs IG Business account + FB app token) ---
+IG_USER_ID = os.getenv("IG_USER_ID", "")           # Instagram Business account ID
+IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "")  # long-lived page access token
+
 # --- Pipeline behaviour ---
 MAX_ARTICLES = _int("MAX_ARTICLES", 5)
 MIN_SOURCES = _int("MIN_SOURCES", 2)

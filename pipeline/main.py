@@ -20,6 +20,7 @@ from src.rank import rank_clusters
 from src.generate import generate_article
 from src.images import attach_image
 from src.publish import publish, trigger_rebuild
+from src.instagram import post_to_instagram
 
 
 def run(breaking: bool = False) -> int:
@@ -88,9 +89,15 @@ def run(breaking: bool = False) -> int:
         article.image_url = attach_image(
             article.image_query, article.image_prompt, seed=seed
         )
-        if publish(article, cluster):
+        slug = publish(article, cluster)
+        if slug:
             published += 1
             seen_keywords.append(kw)
+            # Optional: auto-post to Instagram (no-op if not configured).
+            try:
+                post_to_instagram(article, slug)
+            except Exception as exc:
+                print(f"  [instagram] WARN: {exc}")
 
     print(f"\n=== Done. Published {published} article(s). ===")
     if published:
