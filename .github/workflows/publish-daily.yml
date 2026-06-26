@@ -4,7 +4,9 @@ name: Publish Daily Edition
 # IST = UTC+5:30, so 04:00 IST == 22:30 UTC the previous day.
 on:
   schedule:
-    - cron: "30 22 * * *"   # 22:30 UTC = 04:00 IST
+    # 22:43 UTC = 04:13 IST. Off the hour/half-hour on purpose — GitHub's
+    # shared scheduler delays/drops the most-contended round times (:00/:30).
+    - cron: "43 22 * * *"
   workflow_dispatch:          # allow manual "Run workflow" from the Actions tab
 
 # Avoid overlapping runs if a previous one is slow.
