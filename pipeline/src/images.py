@@ -1,20 +1,58 @@
-"""Stage 5b — Featured image. Uses Pollinations.ai: free, no API key, no
-signup. We build a stable URL from the AI-written image prompt; Pollinations
-generates a unique editorial-style image on first fetch and caches it on a CDN.
+"""Stage 5b — Featured image.
 
-We optionally warm the URL (fetch once) so the CDN has it ready before readers
-arrive, and fall back to a deterministic placeholder if the service is down."""
+Primary: a REAL stock photo from Pexels (free API) — looks genuinely
+photographic, no AI distortion. We search by the AI-written `image_query`.
+
+Fallback: Pollinations.ai AI generation (free, no key) if Pexels has no key,
+returns nothing, or errors — so an article always gets an image.
+"""
 from __future__ import annotations
 import urllib.parse
 
 import requests
 from tenacity import retry, stop_after_attempt, wait_fixed
 
+from config import PEXELS_API_KEY
+
+# ---------------------------------------------------------------------------
+# Primary: Pexels real stock photos
+# ---------------------------------------------------------------------------
+PEXELS_SEARCH = "https://api.pexels.com/v1/search"
+
+
+def _pexels_photo(query: str, seed: int) -> str | None:
+    if not PEXELS_API_KEY or not query.strip():
+        return None
+    try:
+        resp = requests.get(
+            PEXELS_SEARCH,
+            headers={"Authorization": PEXELS_API_KEY},
+            params={
+                "query": query.strip(),
+                "orientation": "landscape",
+                "size": "large",
+                "per_page": 15,
+            },
+            timeout=30,
+        )
+        resp.raise_for_status()
+        photos = resp.json().get("photos", [])
+        if not photos:
+            return None
+        # Deterministic pick (seeded) so the same story keeps the same photo,
+        # but different stories vary.
+        photo = photos[seed % len(photos)]
+        src = photo.get("src", {})
+        return src.get("landscape") or src.get("large") or src.get("original")
+    except requests.RequestException:
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Fallback: Pollinations.ai AI generation (no people, to avoid distortion)
+# ---------------------------------------------------------------------------
 POLLINATIONS = "https://image.pollinations.ai/prompt/{prompt}"
 
-# A consistent visual house-style appended to every prompt. We steer hard away
-# from people/faces/hands — the subjects AI image models distort most — toward
-# scenery, architecture and objects, which render cleanly.
 STYLE_SUFFIX = (
     ", professional editorial news photography, photorealistic, cinematic, "
     "wide establishing shot, scenery architecture and objects, "
@@ -40,7 +78,6 @@ def build_image_url(prompt: str, seed: int = 0, width: int = 1280, height: int =
 
 @retry(stop=stop_after_attempt(2), wait=wait_fixed(3))
 def _warm(url: str) -> bool:
-    # GET (not HEAD) — Pollinations generates on GET. Short read, we discard body.
     resp = requests.get(url, timeout=120, stream=True)
     resp.raise_for_status()
     next(resp.iter_content(1024), None)
@@ -48,12 +85,20 @@ def _warm(url: str) -> bool:
     return True
 
 
-def attach_image(prompt: str, seed: int) -> str:
-    url = build_image_url(prompt, seed=seed)
+# ---------------------------------------------------------------------------
+# Public entry point
+# ---------------------------------------------------------------------------
+def attach_image(image_query: str, image_prompt: str, seed: int) -> str:
+    """Return a real Pexels photo URL when possible, else an AI image URL."""
+    real = _pexels_photo(image_query, seed)
+    if real:
+        print(f"  [image] real photo (Pexels) for '{image_query}'")
+        return real
+
+    url = build_image_url(image_prompt, seed=seed)
     try:
         _warm(url)
-        print(f"  [image] generated (seed={seed})")
-    except Exception as exc:
-        # Non-fatal: the URL still works lazily for readers later.
-        print(f"  [image] warm-up failed ({exc}); using lazy URL")
+        print(f"  [image] AI fallback (Pollinations, seed={seed})")
+    except Exception as exc:  # non-fatal: URL still works lazily
+        print(f"  [image] AI fallback warm-up failed ({exc}); using lazy URL")
     return url

@@ -50,6 +50,9 @@ optionally with '## ' subheadings. Lead with the most important fact.",
   "seo_title": "<= 60 chars, keyword-rich",
   "meta_description": "<= 155 chars",
   "keywords": ["5-8", "lowercase", "seo", "keywords"],
+  "image_query": "2-4 simple, concrete words to find a REAL stock photo for this \
+story — a searchable real-world subject, NO people, e.g. 'earthquake damaged buildings', \
+'oil refinery', 'parliament building', 'cargo ship port', 'wind turbines'",
   "image_prompt": "a photorealistic editorial scene for this story with NO people, \
 NO faces, NO hands, NO crowds. Depict a relevant PLACE, BUILDING, LANDSCAPE, OBJECT \
 or symbolic wide establishing shot instead — e.g. a city skyline, a government or \
@@ -147,6 +150,7 @@ def generate_article(cluster: StoryCluster) -> Article | None:
         keywords=[k.strip().lower() for k in data.get("keywords", []) if k.strip()][:8],
         image_url="",            # filled by images stage
         image_prompt=data.get("image_prompt", headline).strip(),
+        image_query=data.get("image_query", category).strip(),
         credibility_score=cluster.avg_credibility,
         source_count=cluster.source_count,
         read_minutes=estimate_read_minutes(body),

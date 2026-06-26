@@ -66,7 +66,8 @@ class Article:
     meta_description: str
     keywords: list[str]
     image_url: str
-    image_prompt: str
+    image_prompt: str       # used for the AI fallback image
+    image_query: str        # used to search real stock photos (Pexels)
     credibility_score: float
     source_count: int
     read_minutes: int

@@ -25,6 +25,9 @@ SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
+# --- Pexels (real stock photos; optional — falls back to AI images if unset) ---
+PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
+
 # --- Pipeline behaviour ---
 MAX_ARTICLES = _int("MAX_ARTICLES", 5)
 MIN_SOURCES = _int("MIN_SOURCES", 2)
