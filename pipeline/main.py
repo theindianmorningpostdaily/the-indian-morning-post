@@ -14,7 +14,7 @@ import sys
 import config
 from src import db
 from src.collect import collect_all
-from src.dedupe import cluster_items, drop_already_published
+from src.dedupe import cluster_items, drop_already_published, drop_recently_covered
 from src.verify import verify_clusters
 from src.rank import rank_clusters
 from src.generate import generate_article
@@ -44,6 +44,15 @@ def run(breaking: bool = False) -> int:
         print(f"  [main] WARN: could not load published keys ({exc}); continuing")
         published_keys = set()
     clusters = drop_already_published(clusters, published_keys)
+
+    # ...and drop developing stories already covered in the last 3 days, even
+    # if the headline (death toll, new figures) has since changed.
+    try:
+        recent_sigs = db.recent_published_signatures(hours=72)
+    except Exception as exc:
+        print(f"  [main] WARN: could not load recent signatures ({exc}); continuing")
+        recent_sigs = []
+    clusters = drop_recently_covered(clusters, recent_sigs)
 
     # 3. Verify (>= MIN_SOURCES trusted outlets, or a primary outlet)
     clusters = verify_clusters(clusters)

@@ -38,6 +38,19 @@ def fingerprint(title: str) -> str:
     return hashlib.sha1(normalize_title(title).encode("utf-8")).hexdigest()[:16]
 
 
+def significant_tokens(text: str) -> set[str]:
+    """Distinctive words for topic comparison, with crude singularization so
+    'earthquake' and 'earthquakes' match."""
+    out: set[str] = set()
+    for t in normalize_title(text).split():
+        if len(t) <= 3:
+            continue
+        if len(t) > 4 and t.endswith("s"):
+            t = t[:-1]
+        out.add(t)
+    return out
+
+
 def estimate_read_minutes(body: str) -> int:
     words = len(re.findall(r"\w+", body or ""))
     return max(1, round(words / 220))

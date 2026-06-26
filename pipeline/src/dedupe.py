@@ -6,7 +6,7 @@ from __future__ import annotations
 from rapidfuzz import fuzz
 
 from src.models import RawItem, StoryCluster
-from src.utils import normalize_title
+from src.utils import normalize_title, significant_tokens
 
 # A strong fuzzy match alone groups two headlines together.
 SIMILARITY_THRESHOLD = 72
@@ -68,5 +68,26 @@ def drop_already_published(clusters: list[StoryCluster], published_keys: set[str
     fresh = [c for c in clusters if c.key not in published_keys]
     dropped = len(clusters) - len(fresh)
     if dropped:
-        print(f"  [dedupe] dropped {dropped} clusters already published")
+        print(f"  [dedupe] dropped {dropped} clusters already published (exact key)")
     return fresh
+
+
+def drop_recently_covered(
+    clusters: list[StoryCluster],
+    published_sigs: list[set[str]],
+    min_shared: int = 2,
+) -> list[StoryCluster]:
+    """Drop clusters that share >= min_shared distinctive words with a story
+    already published recently — catches developing stories whose headline
+    changed (rising death toll, new figures) but are the same event."""
+    kept: list[StoryCluster] = []
+    suppressed = 0
+    for c in clusters:
+        toks = significant_tokens(c.lead.title)
+        if toks and any(len(toks & sig) >= min_shared for sig in published_sigs):
+            suppressed += 1
+            continue
+        kept.append(c)
+    if suppressed:
+        print(f"  [dedupe] dropped {suppressed} clusters already covered recently")
+    return kept

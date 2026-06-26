@@ -64,3 +64,28 @@ def existing_cluster_keys(limit: int = 2000) -> set[str]:
 def slug_exists(slug: str) -> bool:
     rows = select("articles", {"select": "slug", "slug": f"eq.{slug}", "limit": "1"})
     return len(rows) > 0
+
+
+def recent_published_signatures(hours: int = 72, limit: int = 300) -> list[set[str]]:
+    """Significant-word sets of recently published articles, so a developing
+    story (e.g. a rising earthquake death toll) isn't re-published every run
+    just because its headline changed."""
+    from datetime import datetime, timezone, timedelta
+    from src.utils import significant_tokens
+
+    since = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+    rows = select("articles", {
+        "select": "headline,keywords",
+        "status": "eq.published",
+        "published_at": f"gte.{since}",
+        "order": "published_at.desc",
+        "limit": str(limit),
+    })
+    sigs: list[set[str]] = []
+    for r in rows:
+        toks = significant_tokens(r.get("headline", ""))
+        for kw in (r.get("keywords") or []):
+            toks |= significant_tokens(kw)
+        if toks:
+            sigs.append(toks)
+    return sigs
