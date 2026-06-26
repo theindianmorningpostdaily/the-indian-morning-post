@@ -33,15 +33,26 @@ export default function Footer() {
             <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-500">
               About
             </h4>
-            <ul className="space-y-1 text-sm text-neutral-500">
-              <li>Editorial: The Indian Morning Post Editorial Desk</li>
-              <li>World · Politics · Business · Technology</li>
-              <li>Science · Health · Environment</li>
+            <ul className="space-y-1 text-sm">
+              <li>
+                <Link href="/about/" className="hover:text-accent">About Us</Link>
+              </li>
+              <li>
+                <Link href="/contact/" className="hover:text-accent">Contact</Link>
+              </li>
+              <li>
+                <Link href="/privacy/" className="hover:text-accent">Privacy Policy</Link>
+              </li>
             </ul>
           </div>
         </div>
-        <div className="mt-8 border-t border-neutral-200 pt-4 text-center text-xs text-neutral-400 dark:border-neutral-800">
-          © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
+        <div className="mt-8 flex flex-col items-center gap-2 border-t border-neutral-200 pt-4 text-center text-xs text-neutral-400 dark:border-neutral-800 sm:flex-row sm:justify-between">
+          <span>© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</span>
+          <span className="flex gap-3">
+            <Link href="/about/" className="hover:text-accent">About</Link>
+            <Link href="/contact/" className="hover:text-accent">Contact</Link>
+            <Link href="/privacy/" className="hover:text-accent">Privacy</Link>
+          </span>
         </div>
       </div>
     </footer>

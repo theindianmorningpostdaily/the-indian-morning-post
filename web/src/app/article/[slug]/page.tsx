@@ -6,6 +6,7 @@ import { getArticle, getAllSlugs, getByCategory } from "@/lib/queries";
 import { SITE_NAME, SITE_URL } from "@/lib/supabase";
 import { categoryName, formatDateTime } from "@/lib/format";
 import ArticleCard from "@/components/ArticleCard";
+import ShareButtons from "@/components/ShareButtons";
 
 export const dynamic = "force-static";
 
@@ -129,6 +130,13 @@ export default async function ArticlePage({
         <span>{article.read_minutes} min read</span>
       </div>
 
+      <div className="mt-4">
+        <ShareButtons
+          url={`${SITE_URL}/article/${article.slug}/`}
+          title={article.headline}
+        />
+      </div>
+
       {article.image_url && (
         <figure className="my-6">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -145,6 +153,13 @@ export default async function ArticlePage({
 
       <div className="prose-article">
         <ReactMarkdown>{article.body}</ReactMarkdown>
+      </div>
+
+      <div className="mt-8 border-t border-neutral-200 pt-5 dark:border-neutral-800">
+        <ShareButtons
+          url={`${SITE_URL}/article/${article.slug}/`}
+          title={article.headline}
+        />
       </div>
 
       {article.keywords && article.keywords.length > 0 && (
