@@ -50,8 +50,12 @@ optionally with '## ' subheadings. Lead with the most important fact.",
   "seo_title": "<= 60 chars, keyword-rich",
   "meta_description": "<= 155 chars",
   "keywords": ["5-8", "lowercase", "seo", "keywords"],
-  "image_prompt": "a vivid, realistic editorial photo description for this story \
-(scene/subject/lighting), NO text, NO logos, NO real identifiable faces"
+  "image_prompt": "a photorealistic editorial scene for this story with NO people, \
+NO faces, NO hands, NO crowds. Depict a relevant PLACE, BUILDING, LANDSCAPE, OBJECT \
+or symbolic wide establishing shot instead — e.g. a city skyline, a government or \
+parliament building, a stock-exchange trading floor, damaged terrain, infrastructure, \
+national flags, a harbour, or natural scenery. Describe the setting, mood and lighting. \
+NO text, NO logos, NO watermarks."
 }}
 """
 

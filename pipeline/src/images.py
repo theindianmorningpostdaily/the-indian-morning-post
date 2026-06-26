@@ -12,10 +12,15 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 POLLINATIONS = "https://image.pollinations.ai/prompt/{prompt}"
 
-# A consistent visual house-style appended to every prompt.
+# A consistent visual house-style appended to every prompt. We steer hard away
+# from people/faces/hands — the subjects AI image models distort most — toward
+# scenery, architecture and objects, which render cleanly.
 STYLE_SUFFIX = (
-    ", professional editorial news photography, photorealistic, "
-    "natural lighting, high detail, 16:9, no text, no watermark, no logo"
+    ", professional editorial news photography, photorealistic, cinematic, "
+    "wide establishing shot, scenery architecture and objects, "
+    "no people, no faces, no hands, no crowds, "
+    "natural lighting, high detail, sharp focus, 16:9, "
+    "no text, no watermark, no logo"
 )
 
 
