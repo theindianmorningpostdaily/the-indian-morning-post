@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import SWRegister from "@/components/SWRegister";
+import OneSignalInit from "@/components/OneSignalInit";
 import { SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/supabase";
 
 export const metadata: Metadata = {
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <BackToTop />
         <SWRegister />
+        <OneSignalInit />
       </body>
     </html>
   );

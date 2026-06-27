@@ -38,6 +38,11 @@ SITE_URL = os.getenv(
 IG_USER_ID = os.getenv("IG_USER_ID", "")           # Instagram Business account ID
 IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "")  # long-lived page access token
 
+# --- Web push via OneSignal (optional) ---
+ONESIGNAL_APP_ID = os.getenv("ONESIGNAL_APP_ID", "")
+ONESIGNAL_API_KEY = os.getenv("ONESIGNAL_API_KEY", "")
+PUSH_PER_RUN = _int("PUSH_PER_RUN", 2)   # max push notifications per pipeline run
+
 # --- Pipeline behaviour ---
 MAX_ARTICLES = _int("MAX_ARTICLES", 5)
 MIN_SOURCES = _int("MIN_SOURCES", 2)

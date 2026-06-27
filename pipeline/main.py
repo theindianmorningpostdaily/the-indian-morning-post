@@ -22,6 +22,7 @@ from src.images import attach_image
 from src.publish import publish, trigger_rebuild
 from src.instagram import post_to_instagram
 from src.indexnow import ping_indexnow
+from src.push import send_push
 
 
 def run(breaking: bool = False) -> int:
@@ -101,6 +102,12 @@ def run(breaking: bool = False) -> int:
                 post_to_instagram(article, slug)
             except Exception as exc:
                 print(f"  [instagram] WARN: {exc}")
+            # Optional: web push for the top stories (no-op if not configured).
+            if published <= config.PUSH_PER_RUN:
+                try:
+                    send_push(article, slug)
+                except Exception as exc:
+                    print(f"  [push] WARN: {exc}")
 
     print(f"\n=== Done. Published {published} article(s). ===")
     if published:
