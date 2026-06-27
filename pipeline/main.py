@@ -21,6 +21,7 @@ from src.generate import generate_article
 from src.images import attach_image
 from src.publish import publish, trigger_rebuild
 from src.instagram import post_to_instagram
+from src.indexnow import ping_indexnow
 
 
 def run(breaking: bool = False) -> int:
@@ -67,6 +68,7 @@ def run(breaking: bool = False) -> int:
 
     # 5/6. Generate -> image -> publish
     published = 0
+    published_urls: list[str] = []
     seen_keywords: list[set[str]] = []
     for idx, cluster in enumerate(top):
         if published >= limit:
@@ -93,6 +95,7 @@ def run(breaking: bool = False) -> int:
         if slug:
             published += 1
             seen_keywords.append(kw)
+            published_urls.append(f"{config.SITE_URL}/article/{slug}/")
             # Optional: auto-post to Instagram (no-op if not configured).
             try:
                 post_to_instagram(article, slug)
@@ -102,6 +105,8 @@ def run(breaking: bool = False) -> int:
     print(f"\n=== Done. Published {published} article(s). ===")
     if published:
         trigger_rebuild()
+        # Tell search engines about the new URLs (+ homepage) right away.
+        ping_indexnow(published_urls + [f"{config.SITE_URL}/"])
     return published
 
 

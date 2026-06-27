@@ -7,6 +7,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/supabase";
 import { categoryName, formatDateTime } from "@/lib/format";
 import ArticleCard from "@/components/ArticleCard";
 import ShareButtons from "@/components/ShareButtons";
+import ReadingProgress from "@/components/ReadingProgress";
 
 export const dynamic = "force-static";
 
@@ -84,11 +85,37 @@ export default async function ArticlePage({
     keywords: (article.keywords ?? []).join(", "),
   };
 
+  // Breadcrumb schema: Home > Category > Article
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: categoryName(article.category),
+        item: `${SITE_URL}/category/${article.category}/`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: article.headline,
+        item: `${SITE_URL}/article/${article.slug}/`,
+      },
+    ],
+  };
+
   return (
     <article className="mx-auto max-w-3xl py-6">
+      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
       />
 
       {/* Breadcrumb */}

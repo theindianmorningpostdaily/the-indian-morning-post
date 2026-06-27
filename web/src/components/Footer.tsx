@@ -55,6 +55,12 @@ export default function Footer() {
               <li>
                 <Link href="/privacy/" className="hover:text-accent">Privacy Policy</Link>
               </li>
+              <li>
+                <Link href="/terms/" className="hover:text-accent">Terms of Service</Link>
+              </li>
+              <li>
+                <Link href="/disclaimer/" className="hover:text-accent">Disclaimer</Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -91,10 +97,13 @@ export default function Footer() {
 
         <div className="mt-8 flex flex-col items-center gap-2 border-t border-neutral-200 pt-4 text-center text-xs text-neutral-400 dark:border-neutral-800 sm:flex-row sm:justify-between">
           <span>© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</span>
-          <span className="flex gap-3">
+          <span className="flex flex-wrap justify-center gap-3">
             <Link href="/about/" className="hover:text-accent">About</Link>
             <Link href="/contact/" className="hover:text-accent">Contact</Link>
             <Link href="/privacy/" className="hover:text-accent">Privacy</Link>
+            <Link href="/terms/" className="hover:text-accent">Terms</Link>
+            <Link href="/disclaimer/" className="hover:text-accent">Disclaimer</Link>
+            <a href="/feed.xml" className="hover:text-accent">RSS</a>
           </span>
         </div>
       </div>
