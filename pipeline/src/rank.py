@@ -33,6 +33,16 @@ SIGNAL_WEIGHTS: dict[str, list[str]] = {
 }
 
 
+# We're "The Indian Morning Post" — give India stories a leg up so the home
+# page always carries strong national coverage alongside world news.
+INDIA_TERMS = [
+    "india", "indian", "new delhi", "delhi", "mumbai", "bengaluru", "kolkata",
+    "chennai", "hyderabad", "modi", "rupee", "lok sabha", "rajya sabha",
+    "bjp", "rbi", "isro", "supreme court of india",
+]
+INDIA_BOOST = 5
+
+
 def _keyword_score(text: str) -> int:
     text = text.lower()
     score = 0
@@ -41,6 +51,13 @@ def _keyword_score(text: str) -> int:
             if w in text:
                 score += 1
     return score
+
+
+def _is_india(c: StoryCluster) -> bool:
+    if getattr(c.lead, "category_hint", "") == "india":
+        return True
+    blob = f"{c.lead.title} {c.lead.summary}".lower()
+    return any(t in blob for t in INDIA_TERMS)
 
 
 def score_cluster(c: StoryCluster) -> float:
@@ -55,7 +72,9 @@ def score_cluster(c: StoryCluster) -> float:
     # Recency: items with a timestamp beat undated ones slightly.
     recency = 1 if lead.published_at else 0
 
-    return round(keyword * 3 + corroboration + credibility + recency, 2)
+    india = INDIA_BOOST if _is_india(c) else 0
+
+    return round(keyword * 3 + corroboration + credibility + recency + india, 2)
 
 
 def rank_clusters(clusters: list[StoryCluster], top_n: int) -> list[StoryCluster]:

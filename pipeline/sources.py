@@ -42,6 +42,18 @@ FEEDS: list[Feed] = [
     Feed("The Guardian Tech",  "https://www.theguardian.com/technology/rss",     "technology", 8),
     Feed("NPR World",          "https://feeds.npr.org/1004/rss.xml",             "world", 8),
     Feed("Nature News",        "https://www.nature.com/nature.rss",              "science", 9),
+
+    # ---- India (national + business) ----
+    Feed("The Hindu",          "https://www.thehindu.com/news/national/feeder/default.rss", "india", 9),
+    Feed("Indian Express",     "https://indianexpress.com/section/india/feed/",  "india", 8),
+    Feed("Hindustan Times",    "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml", "india", 8),
+    Feed("NDTV India",         "https://feeds.feedburner.com/ndtvnews-india-news", "india", 8),
+    Feed("Times of India",     "https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms", "india", 7),
+    Feed("India Today",        "https://www.indiatoday.in/rss/1206514",          "india", 7),
+    Feed("News18 India",       "https://www.news18.com/rss/india.xml",           "india", 7),
+    Feed("The Hindu Business", "https://www.thehindu.com/business/feeder/default.rss", "business", 9),
+    Feed("Business Standard",  "https://www.business-standard.com/rss/india-news-216.rss", "business", 8),
+    Feed("Livemint",           "https://www.livemint.com/rss/news",              "business", 8),
 ]
 
 

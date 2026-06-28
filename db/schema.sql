@@ -17,6 +17,7 @@ create table if not exists categories (
 );
 
 insert into categories (slug, name, description, sort_order) values
+  ('india',       'India',       'India news, politics and current affairs',  0),
   ('world',       'World',       'Global affairs and international news',      1),
   ('politics',    'Politics',    'Governments, elections, and diplomacy',      2),
   ('business',    'Business',    'Markets, economy, trade, and finance',       3),

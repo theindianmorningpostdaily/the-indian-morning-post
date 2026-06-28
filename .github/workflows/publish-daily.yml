@@ -3,11 +3,10 @@ name: Publish Daily Edition
 # Runs the newsroom pipeline every morning at 04:00 IST.
 # IST = UTC+5:30, so 04:00 IST == 22:30 UTC the previous day.
 on:
-  schedule:
-    # 22:43 UTC = 04:13 IST. Off the hour/half-hour on purpose — GitHub's
-    # shared scheduler delays/drops the most-contended round times (:00/:30).
-    - cron: "43 22 * * *"
-  workflow_dispatch:          # allow manual "Run workflow" from the Actions tab
+  # Scheduling is driven reliably by cron-job.org (external) which calls this
+  # workflow via the GitHub API. GitHub's own cron was unreliable (delayed/
+  # dropped runs at random times), so we no longer use a `schedule:` here.
+  workflow_dispatch:
 
 # Avoid overlapping runs if a previous one is slow.
 concurrency:

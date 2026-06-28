@@ -29,6 +29,7 @@ export type Article = {
 export type ArticleCard = Omit<Article, "body" | "seo_title" | "meta_description">;
 
 export const CATEGORIES: Category[] = [
+  { slug: "india", name: "India", description: "India news & current affairs", sort_order: 0 },
   { slug: "world", name: "World", description: "Global affairs", sort_order: 1 },
   { slug: "politics", name: "Politics", description: "Governments & diplomacy", sort_order: 2 },
   { slug: "business", name: "Business", description: "Markets & economy", sort_order: 3 },

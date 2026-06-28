@@ -75,7 +75,7 @@ def drop_already_published(clusters: list[StoryCluster], published_keys: set[str
 def drop_recently_covered(
     clusters: list[StoryCluster],
     published_sigs: list[set[str]],
-    min_shared: int = 2,
+    min_shared: int = 3,
 ) -> list[StoryCluster]:
     """Drop clusters that share >= min_shared distinctive words with a story
     already published recently — catches developing stories whose headline

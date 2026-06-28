@@ -41,7 +41,8 @@ SOURCES:
 Return ONLY a JSON object (no markdown fence) with EXACTLY these keys:
 {{
   "publishable": true,
-  "category": one of {categories},
+  "category": one of {categories} (use "india" when the story is primarily \
+about India — its government, economy, society, or events within India),
   "headline": "compelling, accurate, <= 90 chars",
   "subtitle": "one-sentence deck, <= 160 chars",
   "summary": "2-3 sentence standfirst summary",

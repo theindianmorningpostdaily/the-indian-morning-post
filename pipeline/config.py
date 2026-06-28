@@ -53,7 +53,7 @@ CF_PAGES_DEPLOY_HOOK = os.getenv("CF_PAGES_DEPLOY_HOOK", "")
 
 # Valid categories (must match db/schema.sql)
 CATEGORIES = [
-    "world", "politics", "business",
+    "india", "world", "politics", "business",
     "technology", "science", "health", "environment",
 ]
 
