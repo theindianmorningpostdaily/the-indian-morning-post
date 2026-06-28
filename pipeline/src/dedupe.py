@@ -83,7 +83,10 @@ def drop_recently_covered(
     kept: list[StoryCluster] = []
     suppressed = 0
     for c in clusters:
-        toks = significant_tokens(c.lead.title)
+        # Use title + summary so an event still matches even when the source
+        # headline reworded it ("quake" vs "earthquake", dropped the toll, etc.).
+        text = f"{c.lead.title or ''} {getattr(c.lead, 'summary', '') or ''}"
+        toks = significant_tokens(text)
         if toks and any(len(toks & sig) >= min_shared for sig in published_sigs):
             suppressed += 1
             continue
