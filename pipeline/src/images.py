@@ -90,15 +90,36 @@ def _warm(url: str) -> bool:
 # ---------------------------------------------------------------------------
 _INDIA_HINTS = ("india", "indian", "delhi", "mumbai", "bengaluru", "kolkata",
                 "chennai", "hyderabad")
+# Subjects where a generic stock search pulls FOREIGN landmarks (a "presidential
+# palace" returns Kazakhstan, a "parliament" returns Budapest). For India stories
+# on these subjects we use a guaranteed-Indian landmark search instead.
+_GOVT_TERMS = ("parliament", "government", "president", "minister", "ministry",
+               "palace", "diploma", "politic", "election", "defence", "defense",
+               "honour", "honor", "summit", "official", "court", "policy")
+_INDIA_LANDMARKS = [
+    "India Gate New Delhi",
+    "Indian national flag monument",
+    "New Delhi India cityscape",
+    "India Gate Delhi landmark",
+]
+
+
+def _india_query(image_query: str, seed: int) -> str:
+    ql = image_query.lower()
+    if any(h in ql for h in _INDIA_HINTS):
+        return image_query
+    if any(g in ql for g in _GOVT_TERMS):
+        return _INDIA_LANDMARKS[seed % len(_INDIA_LANDMARKS)]
+    return f"India {image_query}".strip()
 
 
 def attach_image(image_query: str, image_prompt: str, seed: int,
                  category: str = "") -> str:
     """Return a real Pexels photo URL when possible, else an AI image URL."""
-    # Keep India coverage visually Indian: if an India story's query doesn't
-    # already mention an Indian place, steer the stock search to India.
-    if category == "india" and not any(h in image_query.lower() for h in _INDIA_HINTS):
-        image_query = f"India {image_query}".strip()
+    # Keep India coverage visually Indian — generic political/landmark queries
+    # otherwise return foreign buildings.
+    if category == "india":
+        image_query = _india_query(image_query, seed)
     real = _pexels_photo(image_query, seed)
     if real:
         print(f"  [image] real photo (Pexels) for '{image_query}'")
