@@ -15,6 +15,7 @@ import config
 from src import db
 from src.collect import collect_all
 from src.dedupe import cluster_items, drop_already_published, drop_recently_covered
+from src.utils import significant_tokens
 from src.verify import verify_clusters
 from src.rank import rank_clusters
 from src.generate import generate_article
@@ -79,11 +80,21 @@ def run(breaking: bool = False) -> int:
         if not article:
             continue
 
-        # Safety net: skip if this story heavily overlaps one already published
-        # in THIS run (same event the clustering didn't merge).
+        # Safety net 1: skip if this story heavily overlaps one already
+        # published in THIS run (same event the clustering didn't merge).
         kw = {k.lower() for k in article.keywords}
         if any(len(kw & prev) >= 3 for prev in seen_keywords):
             print(f"  [dedupe] skipped near-duplicate: {article.headline[:60]}")
+            continue
+
+        # Safety net 2 (cross-run): the GENERATED headline+keywords use
+        # consistent vocabulary, so this reliably catches developing stories
+        # the raw-title check missed (different source wording).
+        art_toks = significant_tokens(article.headline)
+        for k in article.keywords:
+            art_toks |= significant_tokens(k)
+        if any(len(art_toks & sig) >= 3 for sig in recent_sigs):
+            print(f"  [dedupe] skipped already-covered story: {article.headline[:55]}")
             continue
 
         article.is_breaking = breaking
