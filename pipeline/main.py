@@ -101,7 +101,8 @@ def run(breaking: bool = False) -> int:
         # seed image deterministically from cluster key for reproducibility
         seed = int(cluster.key[:6], 16) % 1_000_000
         article.image_url = attach_image(
-            article.image_query, article.image_prompt, seed=seed
+            article.image_query, article.image_prompt, seed=seed,
+            category=article.category,
         )
         slug = publish(article, cluster)
         if slug:

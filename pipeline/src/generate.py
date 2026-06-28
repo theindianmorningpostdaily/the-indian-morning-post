@@ -52,8 +52,11 @@ optionally with '## ' subheadings. Lead with the most important fact.",
   "meta_description": "<= 155 chars",
   "keywords": ["5-8", "lowercase", "seo", "keywords"],
   "image_query": "2-4 simple, concrete words to find a REAL stock photo for this \
-story — a searchable real-world subject, NO people, e.g. 'earthquake damaged buildings', \
-'oil refinery', 'parliament building', 'cargo ship port', 'wind turbines'",
+story — a searchable real-world subject, NO people. ALWAYS include the country or \
+city when the story is location-specific so the photo matches the place, e.g. \
+'Indian Parliament New Delhi', 'India classroom students', 'Mumbai city skyline', \
+'Venezuela earthquake rubble', 'oil refinery'. For India stories prefer Indian \
+landmarks/settings.",
   "image_prompt": "a photorealistic editorial scene for this story with NO people, \
 NO faces, NO hands, NO crowds. Depict a relevant PLACE, BUILDING, LANDSCAPE, OBJECT \
 or symbolic wide establishing shot instead — e.g. a city skyline, a government or \
