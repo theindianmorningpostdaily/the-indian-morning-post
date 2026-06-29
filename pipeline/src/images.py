@@ -113,13 +113,32 @@ def _india_query(image_query: str, seed: int) -> str:
     return f"India {image_query}".strip()
 
 
+def _india_ai_prompt(image_prompt: str, image_query: str) -> str:
+    base = (image_prompt or image_query or "an editorial scene").strip()
+    low = base.lower()
+    if not any(h in low for h in _INDIA_HINTS):
+        base = f"{base}, in India, Indian architecture and setting, South Asian context"
+    return base
+
+
 def attach_image(image_query: str, image_prompt: str, seed: int,
                  category: str = "") -> str:
-    """Return a real Pexels photo URL when possible, else an AI image URL."""
-    # Keep India coverage visually Indian — generic political/landmark queries
-    # otherwise return foreign buildings.
+    """Return a real Pexels photo URL when possible, else an AI image URL.
+
+    India stories skip Pexels: stock libraries lack India-specific event
+    photos and generic queries return foreign landmarks (a CBSE story got
+    Harvard). An India-anchored, no-people AI scene is both relevant AND
+    Indian, and renders cleanly without people.
+    """
     if category == "india":
-        image_query = _india_query(image_query, seed)
+        url = build_image_url(_india_ai_prompt(image_prompt, image_query), seed=seed)
+        try:
+            _warm(url)
+        except Exception:
+            pass
+        print("  [image] AI India scene")
+        return url
+
     real = _pexels_photo(image_query, seed)
     if real:
         print(f"  [image] real photo (Pexels) for '{image_query}'")
