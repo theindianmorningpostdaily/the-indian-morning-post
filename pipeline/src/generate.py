@@ -57,12 +57,17 @@ city when the story is location-specific so the photo matches the place, e.g. \
 'Indian Parliament New Delhi', 'India classroom students', 'Mumbai city skyline', \
 'Venezuela earthquake rubble', 'oil refinery'. For India stories prefer Indian \
 landmarks/settings.",
-  "image_prompt": "a photorealistic editorial scene for this story with NO people, \
-NO faces, NO hands, NO crowds. Depict a relevant PLACE, BUILDING, LANDSCAPE, OBJECT \
-or symbolic wide establishing shot instead — e.g. a city skyline, a government or \
-parliament building, a stock-exchange trading floor, damaged terrain, infrastructure, \
-national flags, a harbour, or natural scenery. Describe the setting, mood and lighting. \
-NO text, NO logos, NO watermarks."
+  "image_prompt": "Pick the SINGLE most concrete, photographable thing at the heart of \
+THIS exact story — the specific object, place, building, vehicle, infrastructure or \
+natural scene the news is actually about — and describe it as a vivid, SPECIFIC photo, \
+not a generic stand-in. Include concrete visual details, the precise setting/location \
+type, time of day, weather and lighting/mood, so the image clearly evokes this story. \
+Strictly NO people, NO faces, NO hands, NO crowds, NO text, NO logos, NO watermarks. \
+Examples: refinery fire -> 'an industrial petrochemical refinery at dusk, thick dark \
+smoke rising from one unit, emergency floodlights glowing, dramatic sky'; temple \
+donation dispute -> 'an ornate Hindu temple with carved stone spires at golden hour, \
+marigold garlands strung across the entrance'; bullet-train plan -> 'a sleek modern \
+high-speed train at a clean railway platform, motion blur, morning light'."
 }}
 """
 
