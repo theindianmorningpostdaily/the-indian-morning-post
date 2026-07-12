@@ -40,7 +40,19 @@ INDIA_TERMS = [
     "chennai", "hyderabad", "modi", "rupee", "lok sabha", "rajya sabha",
     "bjp", "rbi", "isro", "supreme court of india",
 ]
-INDIA_BOOST = 5
+# Enough to keep India prominent, not so much that world news is crowded out.
+INDIA_BOOST = 3
+
+# A story only earns the BREAKING badge if it is genuinely urgent — otherwise
+# the badge appears on everything and stops meaning anything.
+URGENT_TERMS = [
+    "killed", "dead", "death toll", "casualt", "injured", "attack", "blast",
+    "explosion", "bomb", "terror", "shooting", "hijack", "hostage",
+    "earthquake", "quake", "tsunami", "cyclone", "hurricane", "flood",
+    "landslide", "wildfire", "crash", "collapse", "evacuat", "emergency",
+    "airstrike", "invasion", "coup", "assassinat", "outbreak", "epidemic",
+    "rescue", "disaster", "state of emergency", "declares war",
+]
 
 
 def _keyword_score(text: str) -> int:
@@ -53,11 +65,21 @@ def _keyword_score(text: str) -> int:
     return score
 
 
-def _is_india(c: StoryCluster) -> bool:
+def is_india_cluster(c: StoryCluster) -> bool:
     if getattr(c.lead, "category_hint", "") == "india":
         return True
     blob = f"{c.lead.title} {c.lead.summary}".lower()
     return any(t in blob for t in INDIA_TERMS)
+
+
+# Backwards-compatible alias
+_is_india = is_india_cluster
+
+
+def is_urgent_cluster(c: StoryCluster) -> bool:
+    """True only for genuinely urgent events (disaster, violence, emergency)."""
+    blob = f"{c.lead.title} {c.lead.summary}".lower()
+    return any(t in blob for t in URGENT_TERMS)
 
 
 def score_cluster(c: StoryCluster) -> float:

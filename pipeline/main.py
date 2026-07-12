@@ -17,7 +17,7 @@ from src.collect import collect_all
 from src.dedupe import cluster_items, drop_already_published, drop_recently_covered
 from src.utils import significant_tokens
 from src.verify import verify_clusters
-from src.rank import rank_clusters
+from src.rank import rank_clusters, is_india_cluster, is_urgent_cluster
 from src.generate import generate_article
 from src.images import attach_image
 from src.publish import publish, trigger_rebuild
@@ -64,6 +64,17 @@ def run(breaking: bool = False) -> int:
         print("No verified stories today. Exiting without publishing.")
         return 0
 
+    # The hourly run is a BREAKING check: only genuinely urgent events belong
+    # there. Everything else is left for the morning edition, which keeps the
+    # BREAKING badge meaningful and gives the daily edition real material.
+    if breaking:
+        urgent = [c for c in clusters if is_urgent_cluster(c)]
+        print(f"  [breaking] {len(urgent)} of {len(clusters)} verified stories are urgent")
+        clusters = urgent
+        if not clusters:
+            print("No genuinely urgent breaking news right now. Nothing to publish.")
+            return 0
+
     # 4. Rank & select top stories
     # Rank extra candidates so we can skip near-duplicates and still hit `limit`.
     top = rank_clusters(clusters, top_n=limit * 2 + 2)
@@ -72,9 +83,16 @@ def run(breaking: bool = False) -> int:
     published = 0
     published_urls: list[str] = []
     seen_keywords: list[set[str]] = []
+    # We're India-first, but "Trusted GLOBAL News" — cap India's share of each
+    # run so world coverage always gets space.
+    india_cap = max(1, (limit + 1) // 2)
+    india_published = 0
     for idx, cluster in enumerate(top):
         if published >= limit:
             break
+        if is_india_cluster(cluster) and india_published >= india_cap:
+            print(f"  [balance] India quota full ({india_cap}) — leaving room for world news")
+            continue
         print(f"\n--- Story {idx + 1}/{len(top)} ---")
         article = generate_article(cluster)
         if not article:
@@ -107,6 +125,8 @@ def run(breaking: bool = False) -> int:
         slug = publish(article, cluster)
         if slug:
             published += 1
+            if article.category == "india":
+                india_published += 1
             seen_keywords.append(kw)
             published_urls.append(f"{config.SITE_URL}/article/{slug}/")
             # Optional: auto-post to Instagram (no-op if not configured).
