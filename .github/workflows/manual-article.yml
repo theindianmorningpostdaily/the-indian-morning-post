@@ -11,6 +11,11 @@ on:
         description: "Article JSON under pipeline/manual/ (e.g. chimnaramji-jodhaji-gehlot.json)"
         required: true
         type: string
+      update:
+        description: "Edit the existing article with this slug (leave off to publish a new one)"
+        required: false
+        type: boolean
+        default: false
       dry_run:
         description: "Validate only — do not write to the database"
         required: false
@@ -51,6 +56,7 @@ jobs:
           CF_PAGES_DEPLOY_HOOK: ${{ secrets.CF_PAGES_DEPLOY_HOOK }}
         run: |
           python manual_publish.py "manual/${{ inputs.file }}" \
+            ${{ inputs.update && '--update' || '' }} \
             ${{ inputs.dry_run && '--dry-run' || '' }}
 
       # Cloudflare rebuilds the static site on any push to the repo, exactly as

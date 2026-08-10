@@ -42,6 +42,20 @@ def upsert(table: str, rows: list[dict], on_conflict: str) -> None:
     resp.raise_for_status()
 
 
+def update(table: str, params: dict, patch: dict) -> list[dict]:
+    """PATCH rows matching `params`. Returns the rows actually changed, so the
+    caller can tell "updated nothing" from "updated something"."""
+    resp = requests.patch(
+        f"{_BASE}/{table}",
+        headers=_headers(prefer="return=representation"),
+        params=params,
+        json=patch,
+        timeout=30,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
 def select(table: str, params: dict) -> list[dict]:
     resp = requests.get(
         f"{_BASE}/{table}", headers=_headers(), params=params, timeout=30

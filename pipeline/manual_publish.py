@@ -59,6 +59,9 @@ def main() -> None:
     ap.add_argument("path", help="path to the article JSON")
     ap.add_argument("--dry-run", action="store_true",
                     help="validate and print, but do not write to the database")
+    ap.add_argument("--update", action="store_true",
+                    help="edit the existing article with this slug instead of "
+                         "publishing a new one")
     args = ap.parse_args()
 
     path = Path(args.path)
@@ -76,6 +79,34 @@ def main() -> None:
     valid = {c["slug"] for c in db.select("categories", {"select": "slug"})}
     if category not in valid:
         sys.exit(f"ERROR: category '{category}' is not one of {sorted(valid)}")
+
+    if args.update:
+        slug = row["slug"]
+        if not db.slug_exists(slug):
+            sys.exit(f"ERROR: no published article with slug '{slug}' — "
+                     "drop --update to publish it as a new article")
+
+        # An edit is not a republish: keep the original published_at so the
+        # piece holds its place in the timeline and its date does not change
+        # under readers who already have the URL.
+        patch = {k: v for k, v in row.items() if k != "published_at"}
+
+        if args.dry_run:
+            print(f"DRY RUN — nothing written. Would update '{slug}' with:\n")
+            print(json.dumps(patch, indent=2, ensure_ascii=False))
+            return
+
+        try:
+            changed = db.update("articles", {"slug": f"eq.{slug}"}, patch)
+        except requests.HTTPError as exc:
+            detail = getattr(exc.response, "text", "")[:400]
+            sys.exit(f"ERROR: update failed: {exc}\n{detail}")
+        if not changed:
+            sys.exit(f"ERROR: update matched no rows for slug '{slug}'")
+
+        print(f"UPDATED /{category}/{slug}")
+        trigger_rebuild()
+        return
 
     if args.dry_run:
         print("DRY RUN — nothing written. Row that would be inserted:\n")
