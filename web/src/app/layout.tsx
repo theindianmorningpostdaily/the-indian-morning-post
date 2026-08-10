@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import SWRegister from "@/components/SWRegister";
 import OneSignalInit from "@/components/OneSignalInit";
-import { SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/supabase";
+import { INSTAGRAM_URL, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -40,6 +40,8 @@ const orgSchema = {
   url: SITE_URL,
   slogan: SITE_TAGLINE,
   logo: { "@type": "ImageObject", url: `${SITE_URL}/icon.png` },
+  // Tells Google the Instagram profile is the same publisher, not a fan page.
+  sameAs: [INSTAGRAM_URL],
 };
 const siteSchema = {
   "@context": "https://schema.org",

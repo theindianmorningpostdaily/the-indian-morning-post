@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/types";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/supabase";
+import InstagramLink from "./InstagramLink";
 
 // Cross-promotion: topics covered on our sister blog. All open the blog in a
 // new tab so readers don't lose this site.
@@ -26,6 +27,10 @@ export default function Footer() {
               Independent world news — bringing you the stories that matter,
               every morning.
             </p>
+            <InstagramLink
+              className="mt-4 text-sm font-medium text-neutral-600 hover:text-accent dark:text-neutral-400 dark:hover:text-accent-dark"
+              iconClassName="h-5 w-5"
+            />
           </div>
           <div>
             <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-500">

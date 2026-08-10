@@ -29,3 +29,6 @@ export const SITE_URL =
 
 export const SITE_NAME = "The Indian Morning Post";
 export const SITE_TAGLINE = "Trusted Global News, Every Morning";
+
+export const INSTAGRAM_HANDLE = "the_indian_morning_post";
+export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;

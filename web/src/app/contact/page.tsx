@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL } from "@/lib/supabase";
+import InstagramLink from "@/components/InstagramLink";
 
 export const dynamic = "force-static";
 
@@ -33,6 +34,14 @@ export default function ContactPage() {
           >
             {CONTACT_EMAIL}
           </a>
+
+          <p className="mb-0 mt-5 text-sm uppercase tracking-wide text-neutral-500">
+            Instagram
+          </p>
+          <InstagramLink
+            className="text-lg font-semibold text-accent dark:text-accent-dark"
+            iconClassName="h-5 w-5"
+          />
         </div>
 
         <h2>What to contact us about</h2>
