@@ -145,7 +145,10 @@ def generate_article(cluster: StoryCluster) -> Article | None:
 
     headline = data["headline"].strip()
     body = data["body"].strip()
-    slug = slugify(headline)[:80] or slugify(cluster.lead.title)[:80]
+    # word_boundary keeps the 80-char cap from slicing a word in half
+    # ("...high-security-operati").
+    slug = (slugify(headline, max_length=80, word_boundary=True)
+            or slugify(cluster.lead.title, max_length=80, word_boundary=True))
 
     article = Article(
         slug=slug,

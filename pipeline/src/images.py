@@ -76,7 +76,7 @@ def build_image_url(prompt: str, seed: int = 0, width: int = 1280, height: int =
     return url + "?" + urllib.parse.urlencode(params)
 
 
-@retry(stop=stop_after_attempt(2), wait=wait_fixed(3))
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(3))
 def _warm(url: str) -> bool:
     resp = requests.get(url, timeout=120, stream=True)
     resp.raise_for_status()
@@ -134,9 +134,12 @@ def attach_image(image_query: str, image_prompt: str, seed: int,
         url = build_image_url(_india_ai_prompt(image_prompt, image_query), seed=seed)
         try:
             _warm(url)
-        except Exception:
-            pass
-        print("  [image] AI India scene")
+            print("  [image] AI India scene")
+        except Exception as exc:
+            # Non-fatal: the URL still renders lazily, but the first reader pays
+            # the generation wait — so say so instead of failing silently.
+            print(f"  [image] AI India scene warm-up FAILED ({exc}); "
+                  "first visitor will wait on generation")
         return url
 
     real = _pexels_photo(image_query, seed)

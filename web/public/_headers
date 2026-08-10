@@ -1,0 +1,30 @@
+# Cache rules for Cloudflare Workers static assets.
+#
+# Cloudflare's default for every asset is `public, max-age=0, must-revalidate`,
+# which makes a repeat visitor re-validate all 8 bundle files (~448 KB) on every
+# page view — 8 round trips returning 304 before anything renders. Only the
+# fingerprinted build output is overridden below; HTML keeps the default so a
+# freshly published article is live the moment the site rebuilds.
+
+# Next.js build output is content-hashed (117-70963ce3e3e3fa52.js), so a new
+# build always produces a new filename. These can never go stale.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Icons and manifest change rarely and are NOT hashed, so they need a real
+# expiry rather than `immutable` — a day keeps them fresh enough.
+/icon.png
+  Cache-Control: public, max-age=86400
+/icon.svg
+  Cache-Control: public, max-age=86400
+/favicon-32.png
+  Cache-Control: public, max-age=86400
+/apple-icon.png
+  Cache-Control: public, max-age=86400
+/manifest.webmanifest
+  Cache-Control: public, max-age=86400
+
+# Service worker must always be revalidated — a cached sw.js can pin readers to
+# an old version of the site indefinitely. This restates the default on purpose.
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
