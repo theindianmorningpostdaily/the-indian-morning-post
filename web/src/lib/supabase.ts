@@ -22,10 +22,10 @@ export const supabase = createClient(
   { auth: { persistSession: false } }
 );
 
-// Override via NEXT_PUBLIC_SITE_URL if you later add a custom domain.
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  "https://theindianmorningpost.online";
+// The site's public address. Fixed here on purpose: the Cloudflare build
+// still carries an old NEXT_PUBLIC_SITE_URL pointing at workers.dev, and
+// letting it win would put the wrong domain in every canonical link.
+export const SITE_URL = "https://theindianmorningpost.online";
 
 export const SITE_NAME = "The Indian Morning Post";
 export const SITE_TAGLINE = "Trusted Global News, Every Morning";
