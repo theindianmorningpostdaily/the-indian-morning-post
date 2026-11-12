@@ -31,7 +31,7 @@ PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
 # --- Site URL (for building article links in social posts) ---
 SITE_URL = os.getenv(
     "SITE_URL",
-    "https://the-indian-morning-post.theindianmorningpostdaily.workers.dev",
+    "https://theindianmorningpost.online",
 ).rstrip("/")
 
 # --- Instagram auto-post (optional; needs IG Business account + FB app token) ---
