@@ -12,7 +12,7 @@ import urllib.parse
 import requests
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from config import PEXELS_API_KEY
+from config import PEXELS_API_KEY, POLLINATIONS_API_KEY
 
 # ---------------------------------------------------------------------------
 # Primary: Pexels real stock photos
@@ -52,6 +52,9 @@ def _pexels_photo(query: str, seed: int) -> str | None:
 # Fallback: Pollinations.ai AI generation (no people, to avoid distortion)
 # ---------------------------------------------------------------------------
 POLLINATIONS = "https://image.pollinations.ai/prompt/{prompt}"
+# Authenticated API (needs a secret sk_ key). Returns a public media URL that
+# carries no key, so it is safe to store and show to readers.
+POLLINATIONS_API = "https://gen.pollinations.ai/v1/images/generations"
 
 STYLE_SUFFIX = (
     ", professional editorial news photography, photorealistic, cinematic, "
@@ -83,6 +86,57 @@ def _warm(url: str) -> bool:
     next(resp.iter_content(1024), None)
     resp.close()
     return True
+
+
+def _generate_hosted(prompt: str, seed: int, width: int = 1280,
+                     height: int = 720) -> str | None:
+    """Generate through the authenticated API; return its hosted URL or None."""
+    if not POLLINATIONS_API_KEY:
+        return None
+    try:
+        resp = requests.post(
+            POLLINATIONS_API,
+            headers={"Authorization": f"Bearer {POLLINATIONS_API_KEY}"},
+            json={
+                "prompt": (prompt.strip() + STYLE_SUFFIX)[:1000],
+                "model": "flux",
+                "size": f"{width}x{height}",
+                "seed": seed,
+                "n": 1,
+                "response_format": "url",
+            },
+            timeout=180,
+        )
+        if resp.status_code != 200:
+            print(f"  [image] Pollinations API {resp.status_code}: {resp.text[:200]}")
+            return None
+        data = resp.json().get("data") or []
+        url = (data[0] or {}).get("url") if data else None
+        if not url or not str(url).startswith("https://"):
+            print(f"  [image] Pollinations API returned no URL: {resp.text[:200]}")
+            return None
+        return url
+    except Exception as exc:
+        print(f"  [image] Pollinations API failed ({exc})")
+        return None
+
+
+def _ai_image(prompt: str, seed: int, label: str) -> str:
+    """Clean hosted AI image when the key works, else the anonymous URL."""
+    hosted = _generate_hosted(prompt, seed)
+    if hosted:
+        print(f"  [image] {label} (Pollinations API)")
+        return hosted
+    url = build_image_url(prompt, seed=seed)
+    try:
+        _warm(url)
+        print(f"  [image] {label} (anonymous fallback, seed={seed})")
+    except Exception as exc:
+        # Non-fatal: the URL still renders lazily, but the first reader pays
+        # the generation wait, so say so instead of failing silently.
+        print(f"  [image] {label} warm-up FAILED ({exc}); "
+              "first visitor will wait on generation")
+    return url
 
 
 # ---------------------------------------------------------------------------
@@ -131,26 +185,12 @@ def attach_image(image_query: str, image_prompt: str, seed: int,
     Indian, and renders cleanly without people.
     """
     if category == "india":
-        url = build_image_url(_india_ai_prompt(image_prompt, image_query), seed=seed)
-        try:
-            _warm(url)
-            print("  [image] AI India scene")
-        except Exception as exc:
-            # Non-fatal: the URL still renders lazily, but the first reader pays
-            # the generation wait — so say so instead of failing silently.
-            print(f"  [image] AI India scene warm-up FAILED ({exc}); "
-                  "first visitor will wait on generation")
-        return url
+        return _ai_image(_india_ai_prompt(image_prompt, image_query), seed,
+                         "AI India scene")
 
     real = _pexels_photo(image_query, seed)
     if real:
         print(f"  [image] real photo (Pexels) for '{image_query}'")
         return real
 
-    url = build_image_url(image_prompt, seed=seed)
-    try:
-        _warm(url)
-        print(f"  [image] AI fallback (Pollinations, seed={seed})")
-    except Exception as exc:  # non-fatal: URL still works lazily
-        print(f"  [image] AI fallback warm-up failed ({exc}); using lazy URL")
-    return url
+    return _ai_image(image_prompt, seed, "AI fallback")

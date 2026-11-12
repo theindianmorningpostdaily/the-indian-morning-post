@@ -27,6 +27,10 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 # --- Pexels (real stock photos; optional — falls back to AI images if unset) ---
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
+# Secret (sk_) key for Pollinations. With it, AI images are generated through
+# the authenticated API and come back as clean hosted URLs; without it the
+# pipeline falls back to the anonymous URL, which carries a Pollinations logo.
+POLLINATIONS_API_KEY = os.getenv("POLLINATIONS_API_KEY", "")
 
 # --- Site URL (for building article links in social posts) ---
 SITE_URL = os.getenv(
