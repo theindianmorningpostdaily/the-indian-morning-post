@@ -3,6 +3,10 @@ import { CATEGORIES } from "@/lib/types";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/supabase";
 import ThemeToggle from "./ThemeToggle";
 
+// Sister site: the Hindi edition with Rajasthan news.
+const HINDI_EDITION_URL =
+  "https://timp-hindi-rajasthan.theindianmorningposthindi.workers.dev/";
+
 function todayLabel() {
   return new Date().toLocaleDateString("en-GB", {
     weekday: "long",
@@ -20,6 +24,16 @@ export default function Header() {
         <div className="mx-auto flex max-w-page items-center justify-between px-4 py-1.5 text-neutral-500">
           <span>{todayLabel()}</span>
           <div className="flex items-center gap-3">
+            <a
+              href={HINDI_EDITION_URL}
+              target="_blank"
+              rel="noopener"
+              lang="hi"
+              title="Hindi Edition"
+              className="whitespace-nowrap rounded-full bg-accent px-2.5 py-0.5 font-semibold text-white hover:opacity-90"
+            >
+              हिंदी<span className="hidden sm:inline" lang="en"> · Hindi Edition</span>
+            </a>
             <Link href="/search/" className="hover:text-accent">Search</Link>
             <ThemeToggle />
           </div>
